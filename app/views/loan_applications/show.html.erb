@@ -1,0 +1,292 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <%= link_to loan_applications_path, class: "text-blue-600 hover:text-blue-800 text-sm font-medium mb-2 inline-block" do %>
+            ← Back to Applications
+          <% end %>
+          <h1 class="text-3xl font-bold text-gray-900">Loan Application Details</h1>
+          <p class="mt-2 text-gray-600">Application #<%= @loan_application.id %></p>
+        </div>
+        <div class="text-right">
+          <span class="inline-flex px-3 py-2 text-sm font-semibold rounded-full <%= @loan_application.status_badge_class %>">
+            <%= @loan_application.status.humanize %>
+          </span>
+          <p class="text-sm text-gray-500 mt-1">
+            Applied: <%= @loan_application.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Applicant Information -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Applicant Information</h2>
+          </div>
+          <div class="px-6 py-4">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @loan_application.applicant_name %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Email Address</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= mail_to @loan_application.applicant_email, @loan_application.applicant_email, class: "text-blue-600 hover:text-blue-800" %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Phone Number</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @loan_application.applicant_phone.presence || 'Not provided' %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Annual Income</dt>
+                <dd class="mt-1 text-sm text-gray-900 font-medium">
+                  <%= @loan_application.formatted_annual_income %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Credit Score</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <% if @loan_application.credit_score %>
+                    <span class="font-medium"><%= @loan_application.credit_score %></span>
+                    <span class="ml-2 px-2 py-1 text-xs rounded-full
+                      <% if @loan_application.credit_score >= 750 %>
+                        bg-green-100 text-green-800
+                      <% elsif @loan_application.credit_score >= 650 %>
+                        bg-yellow-100 text-yellow-800
+                      <% else %>
+                        bg-red-100 text-red-800
+                      <% end %>">
+                      <% if @loan_application.credit_score >= 750 %>
+                        Excellent
+                      <% elsif @loan_application.credit_score >= 650 %>
+                        Good
+                      <% else %>
+                        Fair
+                      <% end %>
+                    </span>
+                  <% else %>
+                    Not provided
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Loan Details -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Loan Details</h2>
+          </div>
+          <div class="px-6 py-4">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Requested Amount</dt>
+                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @loan_application.formatted_loan_amount %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Purpose</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @loan_application.loan_purpose.presence || 'Not specified' %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Employment Details -->
+        <% if @loan_application.employment_details.present? %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h2 class="text-lg font-semibold text-gray-900">Employment Details</h2>
+            </div>
+            <div class="px-6 py-4">
+              <p class="text-sm text-gray-900 whitespace-pre-wrap"><%= @loan_application.employment_details %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Additional Notes -->
+        <% if @loan_application.additional_notes.present? %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h2 class="text-lg font-semibold text-gray-900">Additional Notes</h2>
+            </div>
+            <div class="px-6 py-4">
+              <p class="text-sm text-gray-900 whitespace-pre-wrap"><%= @loan_application.additional_notes %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Agent Notes -->
+        <% if @loan_application.agent_notes.present? %>
+          <div class="bg-blue-50 rounded-lg border border-blue-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-blue-200">
+              <h2 class="text-lg font-semibold text-blue-900">Agent Notes</h2>
+              <% if @loan_application.reviewed_at %>
+                <p class="text-sm text-blue-700">
+                  Reviewed on <%= @loan_application.reviewed_at.strftime("%B %d, %Y at %I:%M %p") %>
+                  by Agent <%= @loan_application.agent_id %>
+                </p>
+              <% end %>
+            </div>
+            <div class="px-6 py-4">
+              <p class="text-sm text-blue-900 whitespace-pre-wrap"><%= @loan_application.agent_notes %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Sidebar Actions -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden sticky top-8">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Actions</h2>
+          </div>
+          <div class="px-6 py-4">
+            <% if @loan_application.pending? || @loan_application.under_review? %>
+              <!-- Approval Form -->
+              <%= form_with model: @loan_application, url: approve_loan_application_path(@loan_application), method: :patch, local: true do |form| %>
+                <div class="mb-4">
+                  <%= form.label :agent_notes, "Approval Notes (Optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.text_area :agent_notes,
+                                    rows: 3,
+                                    placeholder: "Add any notes about this approval...",
+                                    class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" %>
+                </div>
+                <%= form.submit "Approve Application",
+                                class: "w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 font-medium mb-3",
+                                data: { confirm: "Are you sure you want to approve this application?" } %>
+              <% end %>
+
+              <!-- Denial Form -->
+              <%= form_with model: @loan_application, url: deny_loan_application_path(@loan_application), method: :patch, local: true do |form| %>
+                <div class="mb-4">
+                  <%= form.label :agent_notes, "Reason for Denial", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.text_area :agent_notes,
+                                    rows: 3,
+                                    placeholder: "Please provide a reason for denial...",
+                                    class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500" %>
+                </div>
+                <%= form.submit "Deny Application",
+                                class: "w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 font-medium",
+                                data: { confirm: "Are you sure you want to deny this application? This action cannot be undone." } %>
+              <% end %>
+            <% else %>
+              <div class="text-center py-4">
+                <div class="mx-auto h-12 w-12 text-gray-400 mb-4">
+                  <% if @loan_application.approved? %>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-green-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  <% else %>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-red-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  <% end %>
+                </div>
+                <h3 class="text-sm font-medium text-gray-900 mb-2">
+                  Application <%= @loan_application.status.humanize %>
+                </h3>
+                <p class="text-sm text-gray-500">
+                  <% if @loan_application.reviewed_at %>
+                    Reviewed on <%= @loan_application.reviewed_at.strftime("%B %d, %Y") %>
+                  <% end %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Application Timeline -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mt-6">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Timeline</h2>
+          </div>
+          <div class="px-6 py-4">
+            <div class="flow-root">
+              <ul class="-mb-8">
+                <li class="relative pb-8">
+                  <div class="relative flex space-x-3">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500">
+                      <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path>
+                      </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div>
+                        <p class="text-sm text-gray-900 font-medium">Application Submitted</p>
+                        <p class="text-sm text-gray-500">
+                          <%= @loan_application.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <% if @loan_application.under_review? || @loan_application.approved? || @loan_application.denied? %>
+                  <li class="relative pb-8">
+                    <div class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"></div>
+                    <div class="relative flex space-x-3">
+                      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-500">
+                        <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div>
+                          <p class="text-sm text-gray-900 font-medium">Under Review</p>
+                          <p class="text-sm text-gray-500">Agent <%= @loan_application.agent_id %></p>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+
+                <% if @loan_application.approved? || @loan_application.denied? %>
+                  <li class="relative">
+                    <div class="relative flex space-x-3">
+                      <div class="flex h-8 w-8 items-center justify-center rounded-full <%= @loan_application.approved? ? 'bg-green-500' : 'bg-red-500' %>">
+                        <% if @loan_application.approved? %>
+                          <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                        <% else %>
+                          <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                          </svg>
+                        <% end %>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div>
+                          <p class="text-sm text-gray-900 font-medium">
+                            Application <%= @loan_application.status.humanize %>
+                          </p>
+                          <% if @loan_application.reviewed_at %>
+                            <p class="text-sm text-gray-500">
+                              <%= @loan_application.reviewed_at.strftime("%B %d, %Y at %I:%M %p") %>
+                            </p>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
